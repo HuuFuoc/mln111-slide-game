@@ -2,44 +2,47 @@
 
 import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
 
-import { levels } from "@/data/levels";
+import { TOTAL_VASES } from "@/data/board";
 import { getQuestionById } from "@/data/questions";
-import { buildVases, isLevelComplete } from "@/lib/game-utils";
+import { buildVases } from "@/lib/game-utils";
+import { playSfx, startTheme } from "@/lib/sound";
 import type {
-  ActiveZombie,
   AnswerOptionId,
   GameState,
-  Question,
+  QuizQuestion,
   VaseModel,
 } from "@/types/game";
 
 type Action =
   | { type: "START_GAME" }
-  | { type: "VASE_CLICKED"; vaseId: string }
-  | { type: "VASE_RESOLVED"; vaseId: string }
-  | { type: "ANSWER_SELECTED"; optionId: AnswerOptionId }
-  | { type: "ZOMBIE_RESOLVED" }
-  | { type: "NEXT_LEVEL" }
-  | { type: "RESTART" };
+  | { type: "CLICK_VASE"; vaseId: string }
+  | { type: "OPEN_QUESTION"; vaseId: string }
+  | { type: "ANSWER_WRONG"; optionId: AnswerOptionId }
+  | { type: "ANSWER_CORRECT"; optionId: AnswerOptionId }
+  | { type: "CLEAR_ACTIVE_QUESTION" }
+  | { type: "RESET_GAME" };
 
-const SCORE_EMPTY_VASE = 10;
-const SCORE_CORRECT_ANSWER = 100;
+const VASE_BREAK_DELAY = 420;
+const CLEAR_QUESTION_DELAY = 1500;
 
 function initialState(): GameState {
-  const firstLevel = levels[0];
   return {
     status: "start",
-    levelIndex: 0,
-    health: firstLevel.playerHealth,
-    score: 0,
-    vases: buildVases(firstLevel),
-    activeZombie: null,
+    vases: buildVases(),
+    activeVaseId: null,
     activeQuestionId: null,
-    feedback: null,
+    selectedWrongOptionIds: [],
+    clearedCount: 0,
+    isAnimating: false,
+    lastAnswerCorrect: null,
   };
 }
 
-function setVaseState(
+function freshBoard(): GameState {
+  return { ...initialState(), status: "board" };
+}
+
+function patchVase(
   vases: VaseModel[],
   id: string,
   patch: Partial<VaseModel>,
@@ -49,143 +52,86 @@ function setVaseState(
 
 function reducer(state: GameState, action: Action): GameState {
   switch (action.type) {
-    case "START_GAME": {
-      const level = levels[0];
-      return {
-        ...initialState(),
-        status: "playing",
-        levelIndex: 0,
-        health: level.playerHealth,
-        vases: buildVases(level),
-      };
-    }
+    case "START_GAME":
+      return freshBoard();
 
-    case "VASE_CLICKED": {
-      if (state.status !== "playing") return state;
+    case "CLICK_VASE": {
+      if (state.status !== "board" || state.isAnimating) return state;
       const vase = state.vases.find((v) => v.id === action.vaseId);
-      if (!vase || vase.isOpened || vase.state !== "idle") return state;
+      if (!vase || vase.state !== "idle") return state;
       return {
         ...state,
-        vases: setVaseState(state.vases, action.vaseId, { state: "cracking" }),
+        activeVaseId: action.vaseId,
+        isAnimating: true,
+        vases: patchVase(state.vases, action.vaseId, { state: "breaking" }),
       };
     }
 
-    case "VASE_RESOLVED": {
+    case "OPEN_QUESTION": {
       const vase = state.vases.find((v) => v.id === action.vaseId);
-      if (!vase) return state;
-
-      const updatedVases = setVaseState(state.vases, action.vaseId, {
-        state: "broken",
-        isOpened: true,
-      });
-
-      if (vase.hasZombie && vase.questionId) {
-        const zombie: ActiveZombie = {
-          id: `z-${vase.id}`,
-          vaseId: vase.id,
-          questionId: vase.questionId,
-          x: vase.x,
-          y: vase.y,
-          state: "appearing",
-        };
-        return {
-          ...state,
-          vases: updatedVases,
-          status: "question",
-          activeZombie: zombie,
-          activeQuestionId: vase.questionId,
-          feedback: null,
-        };
-      }
-
-      const allOpened = isLevelComplete(updatedVases);
+      if (!vase || vase.state !== "breaking") return state;
       return {
         ...state,
-        vases: updatedVases,
-        score: state.score + SCORE_EMPTY_VASE,
-        status: allOpened ? "levelComplete" : "playing",
+        status: "question",
+        activeQuestionId: vase.questionId,
+        selectedWrongOptionIds: [],
+        lastAnswerCorrect: null,
+        isAnimating: false,
+        vases: patchVase(state.vases, action.vaseId, { state: "opened" }),
       };
     }
 
-    case "ANSWER_SELECTED": {
+    case "ANSWER_WRONG": {
+      if (state.status !== "question" || state.lastAnswerCorrect) return state;
+      if (state.selectedWrongOptionIds.includes(action.optionId)) return state;
+      // Stay on the same question; just record the wrong pick to mark it red and
+      // re-trigger the zombie effect.
+      return {
+        ...state,
+        selectedWrongOptionIds: [
+          ...state.selectedWrongOptionIds,
+          action.optionId,
+        ],
+      };
+    }
+
+    case "ANSWER_CORRECT": {
       if (
         state.status !== "question" ||
-        !state.activeZombie ||
-        !state.activeQuestionId ||
-        state.feedback
+        state.lastAnswerCorrect ||
+        !state.activeVaseId
       )
         return state;
-
-      const question = getQuestionById(state.activeQuestionId);
-      if (!question) return state;
-
-      const isCorrect = action.optionId === question.correctOptionId;
-      const newHealth = isCorrect ? state.health : state.health - 1;
-
       return {
         ...state,
-        health: newHealth,
-        score: isCorrect ? state.score + SCORE_CORRECT_ANSWER : state.score,
-        activeZombie: {
-          ...state.activeZombie,
-          state: isCorrect ? "hit" : "attacking",
-        },
-        feedback: { selectedOptionId: action.optionId, isCorrect },
+        lastAnswerCorrect: true,
+        isAnimating: true,
+        clearedCount: state.clearedCount + 1,
+        vases: patchVase(state.vases, state.activeVaseId, { state: "cleared" }),
       };
     }
 
-    case "ZOMBIE_RESOLVED": {
-      if (!state.activeZombie) return state;
-      const allOpened = isLevelComplete(state.vases);
-
-      if (state.health <= 0) {
-        return {
-          ...state,
-          status: "gameOver",
-          activeZombie: null,
-          activeQuestionId: null,
-          feedback: null,
-        };
-      }
-
+    case "CLEAR_ACTIVE_QUESTION": {
+      if (state.status !== "question") return state;
+      const won = state.clearedCount >= TOTAL_VASES;
       return {
         ...state,
-        status: allOpened ? "levelComplete" : "playing",
-        activeZombie: null,
+        status: won ? "victory" : "board",
+        activeVaseId: null,
         activeQuestionId: null,
-        feedback: null,
+        selectedWrongOptionIds: [],
+        lastAnswerCorrect: null,
+        isAnimating: false,
       };
     }
 
-    case "NEXT_LEVEL": {
-      const nextIndex = state.levelIndex + 1;
-      if (nextIndex >= levels.length) {
-        return { ...state, status: "victory" };
-      }
-      const level = levels[nextIndex];
-      return {
-        ...state,
-        status: "playing",
-        levelIndex: nextIndex,
-        health: level.playerHealth,
-        vases: buildVases(level),
-        activeZombie: null,
-        activeQuestionId: null,
-        feedback: null,
-      };
-    }
-
-    case "RESTART": {
-      return { ...initialState(), status: "playing" };
-    }
+    case "RESET_GAME":
+      return freshBoard();
 
     default:
       return state;
   }
 }
-
-const VASE_BREAK_DELAY = 380;
-const ZOMBIE_RESOLVE_DELAY = 1200;
 
 export function useGameEngine() {
   const [state, dispatch] = useReducer(reducer, undefined, initialState);
@@ -200,64 +146,74 @@ export function useGameEngine() {
   }, []);
 
   useEffect(() => {
+    const pending = timers.current;
     return () => {
-      timers.current.forEach(clearTimeout);
-      timers.current.clear();
+      pending.forEach(clearTimeout);
+      pending.clear();
     };
   }, []);
 
+  const startGame = useCallback(() => {
+    // First user interaction — safe to start the looping theme here.
+    startTheme();
+    dispatch({ type: "START_GAME" });
+  }, []);
+  const resetGame = useCallback(() => dispatch({ type: "RESET_GAME" }), []);
+
   const handleVaseClick = useCallback(
     (vaseId: string) => {
-      if (state.status !== "playing") return;
+      if (state.status !== "board" || state.isAnimating) return;
       const vase = state.vases.find((v) => v.id === vaseId);
-      if (!vase || vase.isOpened || vase.state !== "idle") return;
+      if (!vase || vase.state !== "idle") return;
 
-      dispatch({ type: "VASE_CLICKED", vaseId });
-      schedule(() => {
-        dispatch({ type: "VASE_RESOLVED", vaseId });
-      }, VASE_BREAK_DELAY);
+      dispatch({ type: "CLICK_VASE", vaseId });
+      // Ensure music is running (idempotent) and play the break SFX.
+      startTheme();
+      playSfx("bonk");
+      schedule(() => dispatch({ type: "OPEN_QUESTION", vaseId }), VASE_BREAK_DELAY);
     },
-    [state.status, state.vases, schedule],
+    [state.status, state.isAnimating, state.vases, schedule],
   );
 
   const handleAnswer = useCallback(
     (optionId: AnswerOptionId) => {
-      if (state.status !== "question" || state.feedback) return;
-      dispatch({ type: "ANSWER_SELECTED", optionId });
-      schedule(() => {
-        dispatch({ type: "ZOMBIE_RESOLVED" });
-      }, ZOMBIE_RESOLVE_DELAY);
+      if (state.status !== "question" || state.lastAnswerCorrect) return;
+      const question = state.activeQuestionId
+        ? getQuestionById(state.activeQuestionId)
+        : undefined;
+      if (!question) return;
+
+      if (optionId === question.correctOptionId) {
+        dispatch({ type: "ANSWER_CORRECT", optionId });
+        playSfx("correct");
+        schedule(
+          () => dispatch({ type: "CLEAR_ACTIVE_QUESTION" }),
+          CLEAR_QUESTION_DELAY,
+        );
+      } else {
+        dispatch({ type: "ANSWER_WRONG", optionId });
+        playSfx("wrong");
+      }
     },
-    [state.status, state.feedback, schedule],
+    [state.status, state.lastAnswerCorrect, state.activeQuestionId, schedule],
   );
 
-  const startGame = useCallback(() => dispatch({ type: "START_GAME" }), []);
-  const nextLevel = useCallback(() => dispatch({ type: "NEXT_LEVEL" }), []);
-  const restart = useCallback(() => dispatch({ type: "RESTART" }), []);
-
-  const activeQuestion: Question | null = useMemo(
+  const activeQuestion: QuizQuestion | null = useMemo(
     () =>
-      state.activeQuestionId ? getQuestionById(state.activeQuestionId) ?? null : null,
+      state.activeQuestionId
+        ? getQuestionById(state.activeQuestionId) ?? null
+        : null,
     [state.activeQuestionId],
-  );
-
-  const currentLevel = useMemo(() => levels[state.levelIndex], [state.levelIndex]);
-
-  const remainingZombies = useMemo(
-    () => state.vases.filter((v) => v.hasZombie && !v.isOpened).length,
-    [state.vases],
   );
 
   return {
     state,
-    currentLevel,
     activeQuestion,
-    remainingZombies,
+    totalVases: TOTAL_VASES,
+    startGame,
+    resetGame,
     handleVaseClick,
     handleAnswer,
-    startGame,
-    nextLevel,
-    restart,
   };
 }
 

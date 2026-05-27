@@ -1,21 +1,29 @@
-import type { LevelConfig, VaseModel } from "@/types/game";
+import { TOTAL_VASES, VASE_LAYOUT } from "@/data/board";
+import { questions } from "@/data/questions";
+import type { VaseModel } from "@/types/game";
 
-export function buildVases(level: LevelConfig): VaseModel[] {
-  return level.vases.map((v) => ({
-    ...v,
-    state: "idle",
-    isOpened: false,
-  }));
+/**
+ * Build the 10 fresh vases for a new game from the static layout, pairing each
+ * vase with the question whose `vaseId` matches. Throws early if a vase has no
+ * matching question so a misconfigured board never ships an "empty" vase.
+ */
+export function buildVases(): VaseModel[] {
+  return VASE_LAYOUT.map((layout) => {
+    const question = questions.find((q) => q.vaseId === layout.id);
+    if (!question) {
+      throw new Error(`Vase "${layout.id}" has no matching question`);
+    }
+    return {
+      id: layout.id,
+      questionId: question.id,
+      state: "idle" as const,
+      position: { x: layout.x, y: layout.y },
+    };
+  });
 }
 
-export function countRemainingZombies(vases: VaseModel[]): number {
-  return vases.filter((v) => v.hasZombie && !v.isOpened).length;
-}
-
-export function countRemainingVases(vases: VaseModel[]): number {
-  return vases.filter((v) => !v.isOpened).length;
-}
-
-export function isLevelComplete(vases: VaseModel[]): boolean {
-  return vases.every((v) => v.isOpened);
+export function isVictory(vases: VaseModel[]): boolean {
+  return (
+    vases.length === TOTAL_VASES && vases.every((v) => v.state === "cleared")
+  );
 }

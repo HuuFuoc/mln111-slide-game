@@ -14,10 +14,13 @@ type Props = {
 };
 
 export function Vase({ vase, canInteract, onClick }: Props) {
-  const vaseSrc = useChromaSprite(ASSETS.vase);
+  const vaseSrc = useChromaSprite(ASSETS.vaseIdle);
   const hammerSrc = useChromaSprite(ASSETS.hammer);
-  const isCracking = vase.state === "cracking";
-  const isBroken = vase.state === "broken";
+
+  const isBreaking = vase.state === "breaking";
+  // "opened" and "cleared" both render the vase as gone/broken.
+  const isGone = vase.state === "opened" || vase.state === "cleared";
+  const interactable = canInteract && vase.state === "idle";
 
   const [bodySpring, bodyApi] = useSpring(() => ({
     x: 0,
@@ -42,7 +45,7 @@ export function Vase({ vase, canInteract, onClick }: Props) {
   }));
 
   useEffect(() => {
-    if (isCracking) {
+    if (isBreaking) {
       bodyApi.start({
         to: async (next) => {
           await next({ x: -6, rotate: -4, config: { tension: 600, friction: 12 } });
@@ -52,17 +55,16 @@ export function Vase({ vase, canInteract, onClick }: Props) {
         },
       });
       hammerApi.start({
+        from: { opacity: 0, y: -60, rotate: -45, scale: 0.9 },
         to: async (next) => {
           await next({ opacity: 1, y: 0, rotate: 20, scale: 1, config: { tension: 500, friction: 20 } });
           await next({ opacity: 0, y: -10, rotate: -10, config: { tension: 260, friction: 22 } });
         },
-        from: { opacity: 0, y: -60, rotate: -45, scale: 0.9 },
       });
-    } else if (isBroken) {
+    } else if (isGone) {
       bodyApi.start({
-        to: async (next) => {
-          await next({ opacity: 0, scale: 0.6, rotate: 25, config: { tension: 220, friction: 22 } });
-        },
+        to: { opacity: 0.32, scale: 0.6, rotate: 22 },
+        config: { tension: 220, friction: 22 },
       });
       dustApi.start({
         from: { opacity: 0, scale: 0.4 },
@@ -72,21 +74,19 @@ export function Vase({ vase, canInteract, onClick }: Props) {
         },
       });
     }
-  }, [isCracking, isBroken, bodyApi, hammerApi, dustApi]);
-
-  const interactable = canInteract && !vase.isOpened && vase.state === "idle";
+  }, [isBreaking, isGone, bodyApi, hammerApi, dustApi]);
 
   return (
     <div
       className="absolute"
       style={{
-        left: `${vase.x}%`,
-        top: `${vase.y}%`,
+        left: `${vase.position.x}%`,
+        top: `${vase.position.y}%`,
         transform: "translate(-50%, -50%)",
       }}
     >
-      <div className="relative h-[110px] w-[90px] sm:h-[140px] sm:w-[110px]">
-        {/* Dust effect when broken */}
+      <div className="relative aspect-[3/4] w-[clamp(46px,5vw,82px)]">
+        {/* Dust burst on break */}
         <animated.div
           aria-hidden
           style={{
@@ -96,12 +96,15 @@ export function Vase({ vase, canInteract, onClick }: Props) {
           className="pointer-events-none absolute inset-0 rounded-full bg-[radial-gradient(circle,rgba(241,217,171,0.95)_0%,rgba(180,140,80,0.55)_40%,transparent_70%)]"
         />
 
-        {/* Vase body — button if interactable */}
         <animated.button
           type="button"
           onClick={interactable ? onClick : undefined}
           disabled={!interactable}
-          aria-label={`Đập bình ${vase.id}`}
+          aria-label={
+            vase.state === "cleared"
+              ? "Bình đã phá"
+              : `Đập bình ${vase.id}`
+          }
           style={{
             transform: bodySpring.x.to(
               (x) =>
@@ -111,7 +114,7 @@ export function Vase({ vase, canInteract, onClick }: Props) {
           }}
           className={`group absolute inset-0 flex items-end justify-center p-0 ${
             interactable
-              ? "cursor-pointer transition-transform hover:scale-105"
+              ? "cursor-pointer transition-transform hover:scale-110"
               : "cursor-default"
           }`}
         >
@@ -119,11 +122,15 @@ export function Vase({ vase, canInteract, onClick }: Props) {
             src={vaseSrc}
             alt="Bình"
             draggable={false}
-            className="h-full w-full select-none object-contain drop-shadow-[0_8px_8px_rgba(0,0,0,0.35)] [animation:vase-bob_2.4s_ease-in-out_infinite]"
+            className={`h-full w-full select-none object-contain drop-shadow-[0_8px_8px_rgba(0,0,0,0.35)] ${
+              vase.state === "idle"
+                ? "[animation:vase-bob_2.4s_ease-in-out_infinite]"
+                : ""
+            }`}
           />
         </animated.button>
 
-        {/* Hammer overlay during cracking */}
+        {/* Hammer strike during break */}
         <animated.img
           aria-hidden
           src={hammerSrc}

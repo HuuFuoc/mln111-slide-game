@@ -2,6 +2,7 @@
 
 import { animated, useSpring, useTrail } from "@react-spring/web";
 
+import { useChromaSprite } from "@/hooks/useChromaSprite";
 import { ASSETS } from "@/lib/assets";
 
 type Props = {
@@ -9,12 +10,14 @@ type Props = {
 };
 
 const tips = [
-  "Click vào bình để đập vỡ chúng.",
-  "Nếu có zombie nhảy ra, trả lời câu hỏi để tiêu diệt nó.",
-  "Trả lời sai sẽ mất máu — hết máu là thua!",
+  "Đập 10 chiếc bình — mỗi bình giấu một câu hỏi.",
+  "Trả lời đúng để hạ zombie và phá vỡ chiếc bình.",
+  "Sai cũng không sao: cứ thử lại đến khi đúng!",
 ];
 
 export function StartScreen({ onStart }: Props) {
+  const characterSrc = useChromaSprite(ASSETS.characterIdle);
+
   const title = useSpring({
     from: { opacity: 0, y: -20, scale: 0.9 },
     to: { opacity: 1, y: 0, scale: 1 },
@@ -46,8 +49,8 @@ export function StartScreen({ onStart }: Props) {
     <div className="absolute inset-0 z-50 flex items-center justify-center bg-gradient-to-b from-black/30 via-black/50 to-black/70 px-4">
       <div className="grid w-full max-w-4xl grid-cols-1 items-center gap-6 sm:grid-cols-[auto_1fr] sm:gap-10">
         <animated.img
-          src={ASSETS.character}
-          alt="Nhân vật"
+          src={characterSrc}
+          alt="Nhân vật chính"
           draggable={false}
           style={{
             opacity: character.opacity,
@@ -60,20 +63,17 @@ export function StartScreen({ onStart }: Props) {
           <animated.div
             style={{
               opacity: title.opacity,
-              transform: title.y.to(
-                (y) =>
-                  `translateY(${y}px) scale(${title.scale.get()})`,
-              ),
+              transform: title.y.to((y) => `translateY(${y}px) scale(${title.scale.get()})`),
             }}
           >
             <div className="text-xs font-bold uppercase tracking-[0.3em] text-amber-300 sm:text-sm">
-              MLN111 · Quiz Game
+              MLN111 · Mini Game
             </div>
             <h1 className="bg-gradient-to-br from-amber-100 via-amber-300 to-orange-500 bg-clip-text text-4xl font-black leading-tight tracking-tight text-transparent drop-shadow-lg sm:text-6xl">
-              Đập Bình Diệt Zombie
+              Phá Bình Diệt Zombie
             </h1>
             <p className="mt-2 text-sm font-medium text-amber-100/80 sm:text-base">
-              Triết học Mác - Lênin theo cách... bạo lực hơn 🔨
+              10 chiếc bình · 10 câu hỏi · trả lời đúng để chiến thắng 🔨
             </p>
           </animated.div>
 
