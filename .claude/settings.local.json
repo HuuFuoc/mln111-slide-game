@@ -9,7 +9,16 @@
       "Bash(pnpm rebuild *)",
       "Bash(pnpm config *)",
       "Read(//c/Users/DELL/.config/pnpm/**)",
-      "Bash(pnpm exec *)"
+      "Bash(pnpm exec *)",
+      "Bash(pnpm dev *)",
+      "Bash(curl -s -o nul -w \"HTTP %{http_code} in %{time_total}s\\\\n\" http://localhost:3000/)",
+      "mcp__chrome-devtools__new_page",
+      "mcp__chrome-devtools__take_screenshot",
+      "mcp__chrome-devtools__list_console_messages",
+      "mcp__chrome-devtools__take_snapshot",
+      "mcp__chrome-devtools__click",
+      "mcp__chrome-devtools__navigate_page",
+      "mcp__chrome-devtools__evaluate_script"
     ]
   }
 }
