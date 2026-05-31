@@ -1,72 +1,40 @@
 export type AnswerOptionId = "A" | "B" | "C" | "D";
 
-export type Question = {
+export type QuizQuestion = {
   id: string;
+  vaseId: string;
   text: string;
   options: { id: AnswerOptionId; text: string }[];
   correctOptionId: AnswerOptionId;
   explanation?: string;
-  difficulty: "easy" | "medium" | "hard";
 };
 
-export type VaseState = "idle" | "cracking" | "broken";
+export type VaseState = "idle" | "breaking" | "opened" | "cleared";
 
-export type ZombieState =
-  | "appearing"
-  | "waitingAnswer"
-  | "hit"
-  | "dead"
-  | "attacking";
-
-export type GameStatus =
-  | "start"
-  | "playing"
-  | "question"
-  | "levelComplete"
-  | "gameOver"
-  | "victory";
-
-export type VaseConfig = {
+export type VaseModel = {
   id: string;
-  x: number;
-  y: number;
-  hasZombie: boolean;
-  questionId?: string;
-};
-
-export type LevelConfig = {
-  id: number;
-  name: string;
-  playerHealth: number;
-  vases: VaseConfig[];
-};
-
-export type VaseModel = VaseConfig & {
-  state: VaseState;
-  isOpened: boolean;
-};
-
-export type ActiveZombie = {
-  id: string;
-  vaseId: string;
   questionId: string;
-  x: number;
-  y: number;
-  state: ZombieState;
+  state: VaseState;
+  position: {
+    x: number;
+    y: number;
+  };
 };
 
-export type AnswerFeedback = {
-  selectedOptionId: AnswerOptionId;
-  isCorrect: boolean;
-} | null;
+export type GameStatus = "start" | "board" | "question" | "victory";
+
+/** Visual animation states driven by the active question outcome. */
+export type CharacterState = "normal" | "wrong" | "correct";
+export type ZombieState = "idle" | "attack" | "hit" | "defeated";
 
 export type GameState = {
   status: GameStatus;
-  levelIndex: number;
-  health: number;
-  score: number;
   vases: VaseModel[];
-  activeZombie: ActiveZombie | null;
+  activeVaseId: string | null;
   activeQuestionId: string | null;
-  feedback: AnswerFeedback;
+  selectedWrongOptionIds: AnswerOptionId[];
+  clearedCount: number;
+  isAnimating: boolean;
+  /** true after a correct answer, until the overlay closes. */
+  lastAnswerCorrect: boolean | null;
 };
