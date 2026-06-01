@@ -1,37 +1,57 @@
 import Link from 'next/link';
+import { AnimatedSection } from './AnimatedSection';
+
+const bullets = [
+  'Ôn lại luận điểm chính về ý thức xã hội, bản chất và tha hóa',
+  'Trả lời câu hỏi nhanh để củng cố kiến thức',
+  'Sử dụng ngay sau phần thuyết trình',
+];
 
 export function MiniGameSection() {
   return (
-    <section id="game" className="scroll-mt-16 py-20 px-4 bg-[#dda15e]/15">
-      <div className="max-w-2xl mx-auto text-center">
-        <div className="text-6xl mb-5">🏺</div>
+    <section
+      id="game"
+      className="scroll-mt-16 min-h-screen flex flex-col justify-center px-4 py-10 bg-[#2d1810]"
+    >
+      <div className="max-w-2xl mx-auto w-full text-center">
+        <AnimatedSection>
+          <span className="inline-block mb-4 text-xs font-bold text-[#dda15e] uppercase tracking-[0.2em]">
+            Ôn tập tương tác
+          </span>
 
-        <span className="inline-block mb-3 text-sm font-semibold text-[#bc6c25] uppercase tracking-widest">
-          Ôn tập tương tác
-        </span>
+          <h2 className="text-3xl md:text-4xl font-black text-[#fefae0] mb-5 leading-tight">
+            Mini Game ôn tập
+          </h2>
 
-        <h2 className="text-3xl md:text-4xl font-bold text-[#2d1810] mb-4">
-          Mini Game ôn tập
-        </h2>
+          <p className="text-[#fefae0]/70 text-base leading-relaxed mb-8 max-w-lg mx-auto">
+            Bạn đã hoàn thành mạch thuyết trình. Bây giờ hãy kiểm tra lại kiến thức bằng Mini Game.
+          </p>
+        </AnimatedSection>
 
-        <p className="text-[#5c3d2e] leading-relaxed mb-2 max-w-lg mx-auto">
-          Sau phần thuyết trình, người xem có thể tham gia mini game để ôn lại nội dung chính.
-        </p>
-        <p className="text-[#5c3d2e]/65 text-sm mb-10 max-w-md mx-auto">
-          Trả lời câu hỏi Triết học Mác – Lênin để đập bình và tiêu diệt zombie — ba màn chơi
-          với độ khó tăng dần.
-        </p>
+        {/* Feature bullets */}
+        <AnimatedSection delay={120}>
+          <ul className="flex flex-col gap-3 text-left max-w-sm mx-auto mb-10">
+            {bullets.map((b, i) => (
+              <li key={i} className="flex gap-3 text-sm text-[#fefae0]/70 leading-relaxed">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#dda15e] flex-shrink-0 mt-1.5" />
+                <span>{b}</span>
+              </li>
+            ))}
+          </ul>
+        </AnimatedSection>
 
-        <Link
-          href="/game"
-          className="inline-block px-10 py-4 bg-[#bc6c25] hover:bg-[#bc4749] text-white font-bold rounded-2xl text-lg transition-colors shadow-lg"
-        >
-          Mở Mini Game →
-        </Link>
+        <AnimatedSection delay={220}>
+          <Link
+            href="/game"
+            className="inline-block px-12 py-4 bg-[#bc6c25] hover:bg-[#a85a1e] hover:-translate-y-0.5 active:translate-y-0 text-white font-bold rounded-2xl text-lg transition-all duration-150 shadow-[0_4px_20px_rgba(188,108,37,0.45)]"
+          >
+            Mở Mini Game →
+          </Link>
 
-        <p className="mt-6 text-xs text-[#bc6c25]/50">
-          Mini game được mở trong cùng cửa sổ trình duyệt
-        </p>
+          <p className="mt-5 text-xs text-[#dda15e]/45">
+            Trả lời câu hỏi Triết học Mác – Lênin · Đập bình · Tiêu diệt zombie
+          </p>
+        </AnimatedSection>
       </div>
     </section>
   );

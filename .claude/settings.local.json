@@ -23,7 +23,15 @@
       "Bash(pnpm build *)",
       "Bash(pnpm lint *)",
       "Bash(git add *)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(curl -s \"https://raw.githubusercontent.com/obra/superpowers/main/README.md\")",
+      "Bash(curl -s \"https://raw.githubusercontent.com/leonxlnx/taste-skill/main/README.md\")",
+      "Bash(curl -s \"https://raw.githubusercontent.com/obra/superpowers/main/skills/writing-skills/SKILL.md\")",
+      "Bash(curl -s \"https://raw.githubusercontent.com/leonxlnx/taste-skill/main/CHANGELOG.md\")",
+      "Bash(node -e \"const p=require\\('./package.json'\\);console.log\\(JSON.stringify\\({deps:p.dependencies,devDeps:p.devDependencies},null,2\\)\\)\")",
+      "Bash(npm run *)",
+      "Bash(pnpm add *)",
+      "Bash(pnpm tsc *)"
     ]
   }
 }

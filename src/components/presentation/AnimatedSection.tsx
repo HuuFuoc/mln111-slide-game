@@ -7,6 +7,11 @@ interface AnimatedSectionProps {
   children: React.ReactNode;
   delay?: number;
   className?: string;
+  /**
+   * once=false (default): animation resets when section leaves viewport,
+   * replays when it returns — ideal for snap-scroll presentation.
+   * once=true: plays once, never resets.
+   */
   once?: boolean;
 }
 
@@ -14,7 +19,7 @@ export function AnimatedSection({
   children,
   delay = 0,
   className = '',
-  once = true,
+  once = false,
 }: AnimatedSectionProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
@@ -23,22 +28,27 @@ export function AnimatedSection({
     const el = containerRef.current;
     if (!el) return;
 
-    // Fallback: always show content after 800ms even if observer never fires
-    const fallback = setTimeout(() => setVisible(true), 800);
+    // Fallback only when once=true (no re-entry possible, observer fires once)
+    let fallback: ReturnType<typeof setTimeout> | undefined;
+    if (once) {
+      fallback = setTimeout(() => setVisible(true), 800);
+    }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setVisible(true);
           if (once) observer.unobserve(el);
+        } else if (!once) {
+          setVisible(false);
         }
       },
-      { threshold: 0, rootMargin: '0px 0px -20px 0px' }
+      { threshold: 0, rootMargin: '-4px 0px -4px 0px' }
     );
 
     observer.observe(el);
     return () => {
-      clearTimeout(fallback);
+      if (fallback) clearTimeout(fallback);
       observer.disconnect();
     };
   }, [once]);
@@ -46,7 +56,10 @@ export function AnimatedSection({
   const spring = useSpring({
     opacity: visible ? 1 : 0,
     transform: visible ? 'translateY(0px)' : 'translateY(28px)',
-    config: { tension: 250, friction: 28 },
+    // Enter: smooth spring; Exit: near-instant so reset happens while off-screen
+    config: visible
+      ? { tension: 270, friction: 26 }
+      : { duration: 80 },
     delay: visible ? delay : 0,
   });
 

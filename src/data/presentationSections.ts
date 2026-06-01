@@ -18,9 +18,9 @@ export interface LandingSection {
 
 export const NAV_ITEMS = [
   { id: 'hero', label: 'Mở đầu' },
-  { id: 'scope', label: 'Phạm vi' },
-  { id: 'consciousness', label: 'Ý thức xã hội' },
-  { id: 'human-nature', label: 'Bản chất con người' },
+  { id: 'scope', label: 'Bản đồ' },
+  { id: 'consciousness', label: 'Ý thức XH' },
+  { id: 'human-nature', label: 'Bản chất' },
   { id: 'alienation', label: 'Tha hóa' },
   { id: 'liberation', label: 'Giải phóng' },
   { id: 'central-thesis', label: 'Luận điểm' },
