@@ -13,6 +13,7 @@ import { ContentSection } from './ContentSection';
 import { CentralQuoteSection } from './CentralQuoteSection';
 import { ConclusionSection } from './ConclusionSection';
 import { MiniGameSection } from './MiniGameSection';
+import { AIUsageSection } from './AIUsageSection';
 
 const SECTION_IDS = NAV_ITEMS.map((n) => n.id);
 const NAV_HEIGHT = 72;
@@ -120,7 +121,7 @@ export function LandingPresentation() {
               onClick={() => scrollToSection('scope')}
               className="px-8 py-4 bg-[#bc6c25] hover:bg-[#a85a1e] text-white font-bold rounded-xl text-base md:text-lg shadow-md hover:-translate-y-0.5 active:translate-y-0 transition-all duration-150"
             >
-              Bắt đầu thuyết trình →
+              Bắt đầu →
             </button>
             <button
               onClick={() => scrollToSection('game')}
@@ -146,6 +147,7 @@ export function LandingPresentation() {
       <CentralQuoteSection />
       <ConclusionSection />
       <MiniGameSection />
+      <AIUsageSection />
 
       <footer className="py-10 px-4 bg-[#2d1810] border-t border-[#bc6c25]/15">
         <div className="max-w-[1120px] mx-auto text-center">
