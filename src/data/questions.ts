@@ -3,6 +3,11 @@ import type { QuizQuestion } from "@/types/game";
 /**
  * Exactly 10 questions — one per vase. Edit the text/options here to change the
  * quiz; keep the count at 10 and each `vaseId` matching a vase in `board.ts`.
+ *
+ * The four options of each question are length-balanced so that the correct
+ * answer is never the obviously shortest/longest, and the correct positions
+ * (A/B/C/D) are spread roughly evenly with no two consecutive questions
+ * sharing the same correct letter.
  */
 export const questions: QuizQuestion[] = [
   {
@@ -10,14 +15,17 @@ export const questions: QuizQuestion[] = [
     vaseId: "vase-1",
     text: "Theo Mác – Lênin, điều gì quyết định nội dung và tính chất của ý thức xã hội?",
     options: [
-      { id: "A", text: "Tồn tại xã hội" },
+      {
+        id: "A",
+        text: "Tồn tại xã hội, tức phương thức sản xuất và điều kiện sinh hoạt vật chất",
+      },
       {
         id: "B",
         text: "Tư tưởng và ý chí của giai cấp cầm quyền trong từng thời kỳ lịch sử",
       },
       {
         id: "C",
-        text: "Truyền thống văn hóa và tôn giáo được truyền qua nhiều thế hệ liên tiếp",
+        text: "Truyền thống văn hóa, tôn giáo được lưu truyền qua nhiều thế hệ",
       },
       {
         id: "D",
@@ -39,10 +47,16 @@ export const questions: QuizQuestion[] = [
       },
       {
         id: "B",
-        text: "Toàn bộ đời sống tinh thần của xã hội: tư tưởng, đạo đức, nghệ thuật, tôn giáo, triết học...",
+        text: "Toàn bộ đời sống tinh thần của xã hội: tư tưởng, đạo đức, nghệ thuật, tôn giáo",
       },
-      { id: "C", text: "Nhận thức và cảm xúc riêng của từng cá nhân" },
-      { id: "D", text: "Hệ thống giáo dục và truyền thông đại chúng" },
+      {
+        id: "C",
+        text: "Nhận thức, cảm xúc và kinh nghiệm riêng của từng cá nhân trong cộng đồng",
+      },
+      {
+        id: "D",
+        text: "Hệ thống giáo dục, truyền thông đại chúng và chính sách văn hóa của nhà nước",
+      },
     ],
     correctOptionId: "B",
     explanation:
@@ -55,21 +69,24 @@ export const questions: QuizQuestion[] = [
     options: [
       {
         id: "A",
-        text: "...sự thống nhất giữa mặt tự nhiên và mặt tinh thần cá nhân",
+        text: "...sự thống nhất giữa mặt sinh học và mặt tinh thần cá nhân",
       },
       {
         id: "B",
-        text: "...lý trí và đạo đức được hình thành qua quá trình giáo dục lâu dài",
+        text: "...lý trí và đạo đức được hình thành qua quá trình giáo dục",
       },
-      { id: "C", text: "...tổng hòa những quan hệ xã hội" },
+      {
+        id: "C",
+        text: "...tổng hòa của những quan hệ xã hội hiện thực và lịch sử",
+      },
       {
         id: "D",
-        text: "...kết quả của sự tiến hóa sinh học kết hợp với điều kiện môi trường sống",
+        text: "...kết quả của tiến hóa sinh học kết hợp với môi trường sống",
       },
     ],
     correctOptionId: "C",
     explanation:
-      "C.Mác viết: 'Trong tính hiện thực của nó, bản chất con người là tổng hòa những quan hệ xã hội.'",
+      "C.Mác viết: 'Trong tính hiện thực của nó, bản chất con người là tổng hòa những quan hệ xã hội' – nhấn mạnh tính lịch sử – xã hội của con người.",
   },
   {
     id: "q4",
@@ -78,22 +95,22 @@ export const questions: QuizQuestion[] = [
     options: [
       {
         id: "A",
-        text: "Phân chia con người theo giai cấp và địa vị trong xã hội",
+        text: "Hình thành tư duy, ngôn ngữ, kỹ năng và các quan hệ xã hội của con người",
       },
       {
         id: "B",
-        text: "Là phương tiện để con người cạnh tranh và khẳng định bản thân trong môi trường xã hội",
+        text: "Phân chia con người thành các giai cấp và địa vị khác nhau trong xã hội",
       },
       {
         id: "C",
-        text: "Hình thành tư duy, ngôn ngữ, kỹ năng và các quan hệ xã hội",
+        text: "Tạo ra phương tiện để con người cạnh tranh và khẳng định bản thân với nhau",
       },
       {
         id: "D",
-        text: "Giúp con người tìm kiếm sự công nhận và đánh giá từ cộng đồng",
+        text: "Mang lại sự công nhận và đánh giá của cộng đồng xung quanh con người",
       },
     ],
-    correctOptionId: "C",
+    correctOptionId: "A",
     explanation:
       "Lao động giúp con người hình thành tư duy, ngôn ngữ, kỹ năng, kỷ luật, quan hệ hợp tác và năng lực sáng tạo – cơ sở để con người trở thành thực thể xã hội.",
   },
@@ -104,7 +121,7 @@ export const questions: QuizQuestion[] = [
     options: [
       {
         id: "A",
-        text: "Ý thức xã hội thay đổi ngay sau khi điều kiện kinh tế thay đổi, không có độ trễ nào",
+        text: "Ý thức xã hội thay đổi ngay khi điều kiện kinh tế thay đổi, không có độ trễ",
       },
       {
         id: "B",
@@ -112,11 +129,11 @@ export const questions: QuizQuestion[] = [
       },
       {
         id: "C",
-        text: "Ý thức xã hội hoàn toàn phụ thuộc vào hệ thống giáo dục và chính sách tuyên truyền của nhà nước",
+        text: "Ý thức xã hội phụ thuộc hoàn toàn vào hệ thống giáo dục và tuyên truyền",
       },
       {
         id: "D",
-        text: "Ý thức xã hội không bao giờ có thể vượt trước hoặc lạc hậu hơn tồn tại xã hội trong thực tế",
+        text: "Ý thức xã hội không bao giờ vượt trước hay lạc hậu so với tồn tại xã hội",
       },
     ],
     correctOptionId: "B",
@@ -130,22 +147,22 @@ export const questions: QuizQuestion[] = [
     options: [
       {
         id: "A",
-        text: "Con người có ngôn ngữ, tư duy và lao động có ý thức",
+        text: "Con người có cảm xúc và khả năng yêu thương đồng loại sâu sắc hơn loài vật",
       },
       {
         id: "B",
-        text: "Con người có cảm xúc và khả năng yêu thương đồng loại sâu sắc hơn bất kỳ loài nào khác",
+        text: "Con người sống trong xã hội tổ chức theo hệ thống pháp luật và nhà nước",
       },
       {
         id: "C",
-        text: "Con người sống trong xã hội được tổ chức theo hệ thống pháp luật và nhà nước chặt chẽ",
+        text: "Con người có khả năng học tập, ghi nhớ và sáng tạo vượt trội so với loài vật",
       },
       {
         id: "D",
-        text: "Con người có khả năng học tập và ghi nhớ vượt trội so với tất cả các loài sinh vật",
+        text: "Con người biết lao động có ý thức, sử dụng công cụ, có tư duy và ngôn ngữ",
       },
     ],
-    correctOptionId: "A",
+    correctOptionId: "D",
     explanation:
       "Con người khác với loài vật ở chỗ biết lao động có ý thức, sử dụng công cụ, có tư duy và ngôn ngữ, từ đó sáng tạo ra văn hóa và các quan hệ xã hội.",
   },
@@ -156,22 +173,22 @@ export const questions: QuizQuestion[] = [
     options: [
       {
         id: "A",
-        text: "Khi con người không theo kịp sự phát triển nhanh chóng của khoa học, công nghệ và đổi mới trong thời đại mới",
+        text: "Khi con người không theo kịp tốc độ phát triển của khoa học và công nghệ",
       },
       {
         id: "B",
-        text: "Khi con người mất kết nối sâu sắc với văn hóa, truyền thống và bản sắc dân tộc đặc thù của mình",
+        text: "Khi con người mất kết nối với văn hóa, truyền thống và bản sắc dân tộc",
       },
       {
         id: "C",
-        text: "Khi con người rời xa gia đình và các mối quan hệ thân thiết, sống một mình nơi đất khách quê người",
+        text: "Khi sản phẩm và quan hệ xã hội do con người tạo ra quay lại chi phối chính họ",
       },
       {
         id: "D",
-        text: "Khi sản phẩm và quan hệ xã hội do con người tạo ra quay lại chi phối, áp bức con người",
+        text: "Khi con người rời xa gia đình, người thân và phải sống một mình nơi xa lạ",
       },
     ],
-    correctOptionId: "D",
+    correctOptionId: "C",
     explanation:
       "Tha hóa là khi con người bị tách khỏi bản chất đích thực – sản phẩm lao động, thiết chế và quan hệ xã hội do họ tạo ra lại quay lại chi phối, áp bức họ.",
   },
@@ -182,22 +199,22 @@ export const questions: QuizQuestion[] = [
     options: [
       {
         id: "A",
-        text: "Người lao động làm ra sản phẩm nhưng không làm chủ sản phẩm, chỉ lao động để tồn tại",
+        text: "Người lao động không hài lòng với tiền lương và điều kiện làm việc hiện tại",
       },
       {
         id: "B",
-        text: "Người lao động không hài lòng với tiền lương và điều kiện làm việc hiện tại của mình",
-      },
-      {
-        id: "C",
         text: "Người lao động chỉ làm đúng giờ quy định mà không sẵn sàng nỗ lực thêm",
       },
       {
+        id: "C",
+        text: "Người lao động thiếu kỹ năng chuyên môn cần thiết cho công việc đang làm",
+      },
+      {
         id: "D",
-        text: "Người lao động thiếu kỹ năng chuyên môn cần thiết cho công việc đang đảm nhiệm",
+        text: "Người lao động tạo ra sản phẩm nhưng không làm chủ, chỉ lao động để tồn tại",
       },
     ],
-    correctOptionId: "A",
+    correctOptionId: "D",
     explanation:
       "Trong điều kiện bóc lột, người lao động không làm chủ sản phẩm, phụ thuộc vào tiền lương và thị trường, lao động chỉ để tồn tại – đây là biểu hiện của lao động bị tha hóa.",
   },
@@ -208,11 +225,11 @@ export const questions: QuizQuestion[] = [
     options: [
       {
         id: "A",
-        text: "Xóa bỏ hoàn toàn sự phân hóa về tài sản và thu nhập giữa các thành viên trong xã hội",
+        text: "Xóa bỏ hoàn toàn sự phân hóa tài sản và thu nhập giữa các thành viên xã hội",
       },
       {
         id: "B",
-        text: "Tạo điều kiện để con người phát triển tự do và toàn diện",
+        text: "Tạo điều kiện để con người phát triển tự do, toàn diện và làm chủ đời sống",
       },
       {
         id: "C",
@@ -220,7 +237,7 @@ export const questions: QuizQuestion[] = [
       },
       {
         id: "D",
-        text: "Đảm bảo mỗi người đều có thu nhập bình đẳng và điều kiện sống ngang nhau trong xã hội",
+        text: "Đảm bảo mọi người có thu nhập bằng nhau và điều kiện sống hoàn toàn ngang bằng",
       },
     ],
     correctOptionId: "B",
@@ -238,15 +255,15 @@ export const questions: QuizQuestion[] = [
       },
       {
         id: "B",
-        text: "Tăng trưởng kinh tế nhanh chóng để nâng cao mức sống vật chất của toàn xã hội",
+        text: "Tăng trưởng kinh tế thật nhanh để nâng cao mức sống vật chất của toàn xã hội",
       },
       {
         id: "C",
-        text: "Xây dựng các quan hệ xã hội tiến bộ: giáo dục tốt, lao động công bằng, đời sống kinh tế ổn định",
+        text: "Xây dựng quan hệ xã hội tiến bộ: giáo dục, lao động công bằng và kinh tế ổn định",
       },
       {
         id: "D",
-        text: "Phát triển văn hóa nghệ thuật và tôn giáo để nâng cao tinh thần cộng đồng",
+        text: "Phát triển văn hóa, nghệ thuật và tôn giáo để nâng cao đời sống tinh thần xã hội",
       },
     ],
     correctOptionId: "C",
