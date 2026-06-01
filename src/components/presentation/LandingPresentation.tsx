@@ -110,7 +110,7 @@ export function LandingPresentation() {
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-black leading-[1.08] tracking-tight mb-6">
             <span className="block text-[#fefae0]">Bản chất con người</span>
-            <span className="block text-[#bc4749]">là tổng hòa các quan hệ xã hội</span>
+            <span className="block text-[#dda15e]">là tổng hòa các quan hệ xã hội</span>
           </h1>
           <p className="text-[#dda15e]/80 text-lg md:text-xl leading-relaxed max-w-2xl mx-auto mb-10">
             Thuyết trình về ý thức xã hội, bản chất xã hội, hiện tượng tha hóa và mục tiêu giải phóng con người.

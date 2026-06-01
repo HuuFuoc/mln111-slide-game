@@ -104,7 +104,7 @@ export function HeroSection({ onStart, onGame }: HeroSectionProps) {
           Bản chất con người
           <br />
           là{' '}
-          <span className="text-[#bc4749]">tổng hòa các quan hệ xã hội</span>
+          <span className="text-[#bc6c25]">tổng hòa các quan hệ xã hội</span>
         </animated.h1>
 
         <animated.p
