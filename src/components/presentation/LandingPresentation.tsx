@@ -118,12 +118,14 @@ export function LandingPresentation() {
             Thuyết trình về ý thức xã hội, bản chất xã hội, hiện tượng tha hóa và mục tiêu giải phóng con người.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4">
-            <button
-              onClick={() => scrollToSection('scope')}
+            <a
+              href="https://mln111-self.vercel.app/"
+              target="_blank"
+              rel="noopener noreferrer"
               className="px-8 py-4 bg-[#bc6c25] hover:bg-[#a85a1e] text-white font-bold rounded-xl text-base md:text-lg shadow-md hover:-translate-y-0.5 active:translate-y-0 transition-all duration-150"
             >
-              Bắt đầu →
-            </button>
+              Đọc câu chuyện →
+            </a>
             <button
               onClick={() => scrollToSection('game')}
               className="px-8 py-4 border-2 border-[#bc6c25] text-[#dda15e] hover:bg-[#bc6c25]/15 font-bold rounded-xl text-base md:text-lg transition-all duration-150"
