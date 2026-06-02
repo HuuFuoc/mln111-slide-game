@@ -14,6 +14,7 @@ import { CentralQuoteSection } from './CentralQuoteSection';
 import { ConclusionSection } from './ConclusionSection';
 import { MiniGameSection } from './MiniGameSection';
 import { AIUsageSection } from './AIUsageSection';
+import { StorySection } from './StorySection';
 
 const SECTION_IDS = NAV_ITEMS.map((n) => n.id);
 const NAV_HEIGHT = 72;
@@ -146,6 +147,7 @@ export function LandingPresentation() {
 
       <CentralQuoteSection />
       <ConclusionSection />
+      <StorySection />
       <MiniGameSection />
       <AIUsageSection />
 

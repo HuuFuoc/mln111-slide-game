@@ -9,6 +9,72 @@ interface StickyNavProps {
   onNavClick: (id: string) => void;
 }
 
+const beforeGame = NAV_ITEMS.filter((item) => item.id !== 'game');
+const gameItem = NAV_ITEMS.find((item) => item.id === 'game')!;
+
+function NavButton({
+  item,
+  isActive,
+  onClick,
+}: {
+  item: (typeof NAV_ITEMS)[number];
+  isActive: boolean;
+  onClick: () => void;
+}) {
+  const isGame = item.id === 'game';
+  return (
+    <button
+      onClick={onClick}
+      aria-current={isActive ? 'page' : undefined}
+      className={[
+        'flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all duration-200',
+        isActive
+          ? 'bg-[#bc6c25] text-white shadow-sm'
+          : isGame
+            ? 'text-[#bc4749] hover:bg-[#bc4749]/10 border border-[#bc4749]/50'
+            : 'text-[#5c3d2e]/80 hover:bg-[#dda15e]/30 hover:text-[#bc6c25]',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+    >
+      {item.label}
+    </button>
+  );
+}
+
+function SidebarDot({
+  item,
+  isActive,
+  onClick,
+}: {
+  item: (typeof NAV_ITEMS)[number];
+  isActive: boolean;
+  onClick: () => void;
+}) {
+  const isGame = item.id === 'game';
+  return (
+    <button
+      onClick={onClick}
+      aria-label={item.label}
+      className="group relative flex items-center justify-center w-5 h-5"
+    >
+      <span
+        className={[
+          'block rounded-full transition-[width,height,background-color,box-shadow] duration-200',
+          isActive
+            ? 'w-3 h-3 bg-[#bc6c25] shadow-[0_0_0_3px_rgba(188,108,37,0.20)]'
+            : isGame
+              ? 'w-2 h-2 bg-[#bc4749]/45 group-hover:bg-[#bc4749] group-hover:w-2.5 group-hover:h-2.5'
+              : 'w-2 h-2 bg-[#5c3d2e]/22 group-hover:bg-[#dda15e] group-hover:w-2.5 group-hover:h-2.5',
+        ].join(' ')}
+      />
+      <span className="absolute right-full mr-3 z-[60] bg-[#2d1810] text-[#fefae0] text-xs font-medium px-2.5 py-1 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none shadow-lg">
+        {item.label}
+      </span>
+    </button>
+  );
+}
+
 export function StickyNav({ activeSection, onNavClick }: StickyNavProps) {
   const [scrolled, setScrolled] = useState(false);
 
@@ -23,7 +89,6 @@ export function StickyNav({ activeSection, onNavClick }: StickyNavProps) {
 
   return (
     <>
-      {/* Scroll progress — always at the very top */}
       <div className="fixed top-0 left-0 right-0 z-[60]">
         <ScrollProgress />
       </div>
@@ -38,29 +103,19 @@ export function StickyNav({ activeSection, onNavClick }: StickyNavProps) {
         ].join(' ')}
       >
         <div className="bg-[#fefae0]/95 backdrop-blur-md border border-[#dda15e]/40 shadow-lg rounded-full px-2 py-1.5 flex items-center gap-0.5">
-          {NAV_ITEMS.map((item) => {
-            const isActive = activeSection === item.id;
-            const isGame = item.id === 'game';
-            return (
-              <button
-                key={item.id}
-                onClick={() => onNavClick(item.id)}
-                aria-current={isActive ? 'page' : undefined}
-                className={[
-                  'flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all duration-200',
-                  isActive
-                    ? 'bg-[#bc6c25] text-white shadow-sm'
-                    : isGame
-                      ? 'text-[#bc4749] hover:bg-[#bc4749]/10 border border-[#bc4749]/50'
-                      : 'text-[#5c3d2e]/80 hover:bg-[#dda15e]/30 hover:text-[#bc6c25]',
-                ]
-                  .filter(Boolean)
-                  .join(' ')}
-              >
-                {item.label}
-              </button>
-            );
-          })}
+          {beforeGame.map((item) => (
+            <NavButton
+              key={item.id}
+              item={item}
+              isActive={activeSection === item.id}
+              onClick={() => onNavClick(item.id)}
+            />
+          ))}
+          <NavButton
+            item={gameItem}
+            isActive={activeSection === gameItem.id}
+            onClick={() => onNavClick(gameItem.id)}
+          />
         </div>
       </nav>
 
@@ -74,33 +129,19 @@ export function StickyNav({ activeSection, onNavClick }: StickyNavProps) {
         ].join(' ')}
       >
         <div className="bg-[#fefae0]/90 backdrop-blur-md border border-[#dda15e]/40 shadow-xl rounded-2xl py-3 px-2.5 flex flex-col gap-3">
-          {NAV_ITEMS.map((item) => {
-            const isActive = activeSection === item.id;
-            const isGame = item.id === 'game';
-            return (
-              <button
-                key={item.id}
-                onClick={() => onNavClick(item.id)}
-                aria-label={item.label}
-                className="group relative flex items-center justify-center w-5 h-5"
-              >
-                <span
-                  className={[
-                    'block rounded-full transition-[width,height,background-color,box-shadow] duration-200',
-                    isActive
-                      ? 'w-3 h-3 bg-[#bc6c25] shadow-[0_0_0_3px_rgba(188,108,37,0.20)]'
-                      : isGame
-                        ? 'w-2 h-2 bg-[#bc4749]/45 group-hover:bg-[#bc4749] group-hover:w-2.5 group-hover:h-2.5'
-                        : 'w-2 h-2 bg-[#5c3d2e]/22 group-hover:bg-[#dda15e] group-hover:w-2.5 group-hover:h-2.5',
-                  ].join(' ')}
-                />
-                {/* Tooltip — appears to the left on hover */}
-                <span className="absolute right-full mr-3 z-[60] bg-[#2d1810] text-[#fefae0] text-xs font-medium px-2.5 py-1 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none shadow-lg">
-                  {item.label}
-                </span>
-              </button>
-            );
-          })}
+          {beforeGame.map((item) => (
+            <SidebarDot
+              key={item.id}
+              item={item}
+              isActive={activeSection === item.id}
+              onClick={() => onNavClick(item.id)}
+            />
+          ))}
+          <SidebarDot
+            item={gameItem}
+            isActive={activeSection === gameItem.id}
+            onClick={() => onNavClick(gameItem.id)}
+          />
         </div>
       </aside>
     </>

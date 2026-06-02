@@ -25,6 +25,7 @@ export const NAV_ITEMS = [
   { id: 'liberation', label: 'Giải phóng' },
   { id: 'central-thesis', label: 'Luận điểm' },
   { id: 'conclusion', label: 'Kết luận' },
+  { id: 'cau-chuyen', label: 'Câu chuyện' },
   { id: 'game', label: 'Mini Game' },
 ] as const;
 
